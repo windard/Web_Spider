@@ -64,6 +64,7 @@ print html
 ```
 保存为urllib_get.py,运行，看一下接收回来的数据。
 ![GET请求](get.jpg)
+
 在此处也可以采用另一种的写法：
 ```python
 import urllib
@@ -99,6 +100,7 @@ html = page.read()
 print html
 ```
 保存为urllib_post.py,运行，看一下接收回来的数据。
+
 ![POST请求](post.jpg)
 仔细分析一下源码可以看出来，urlopen的第一个参数已经出现了，就是params可以在发送http请求是附带其他数据或者参数，来实现不同的http请求。
 urllib除了可以发送简单get和post请求，还可以发送put和delect请求，这两种比较复杂，这里就不在做详细讲解了。
@@ -163,6 +165,7 @@ print pic[1]
 ```
 保存为urllib_urlretrieve.py,运行，看一下结果。
 ![urlretrieve结果](urlretrieve.jpg)
+
 确实是返回文件名和文件信息，看一下文件夹，也保存下来了xidian.jpg这个照片。
 这里有一个小技巧，就是文件名的设定。
 我不是指定文件名了么，在url里面，不想早后面再自己手动的写文件名了，就可以这样写：
@@ -253,6 +256,7 @@ html = page.read()
 print html
 ```
 保存为urllib2_post.py，运行，看一下结果。
+
 ![urllib2_POST](urllib2_post.jpg)
 确实可以发送一个带着http请求头的post请求，虽然看不出来与之前有什么区别。
 那么既然可以发送post请求，那么用之前的第二种方法发送get请求当然也可以，这里就不再做演示了。
@@ -564,6 +568,7 @@ for key,value in headers.items():
 [urllib模块和urllib2模块的区别](http://www.cnblogs.com/sysu-blackbear/p/3630178.html)
 
 [Python 第三方 http 库-Requests 学习](http://www.itwhy.org/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/python/python-%E7%AC%AC%E4%B8%89%E6%96%B9-http-%E5%BA%93-requests-%E5%AD%A6%E4%B9%A0.html)
+
 [python requests的安装与简单运用](http://www.zhidaow.com/post/python-requests-install-and-brief-introduction)
 
 [requests官方文档-安装](http://requests-docs-cn.readthedocs.org/zh_CN/latest/user/install.html#install)
