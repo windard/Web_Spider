@@ -1,17 +1,42 @@
 #python网络爬虫
+===
 
+>* [关于爬虫](#1)
+* [urllib](#2)
+	* [基本使用](#2.1)
+	* [进阶操作](#2.2)
+		* [发送请求](#2.2.1)
+		* [urlopen返回对象](#2.2.2)
+		* [urllib.urlretrieve()](#2.2.3)
+	* [urllib其他函数](#2.3)
+* [urllib2](#3)
+	* [基本使用](#3.1)
+	* [进阶操作](#3.2)
+		* [urllib2.Request()](#3.2.1)
+		* [urllib2.build_opener()](#3.2.2)
+	* [urllib2其他函数](#3.3)
+	* [urllib与urllib2的区别](#3.4)
+* [requests](#4)
+	* [安装](#4.1)
+	* [基本使用](#4.2)
+	* [进阶操作](#4.3)
+		* [requests发送请求](#4.3.1)
+		* [requests上传文件](#4.3.2)
+		* [requests其他功能](#4.3.3)
+		* [requests返回对象](#4.3.4)
+* [参考链接](#5)
 ---
 [TOC]
 
 
-##关于爬虫
+##<span id="1">关于爬虫</span>
 网络爬虫，即Web Spider，抓取网页数据，像Google，Baidu等公司，他们的搜索引擎每天都派出数以亿万的爬虫夜以继日的抓取网络数据并存储起来，无数的网络工程师为他们的抓取速度，存储效率做优化。
 
 当然他们的爬虫不是用python写的，不过python强大的各种函数库的使用也可以做简单的爬虫来玩玩。本系列教程博客主要使用的python库有urllib urllib2 request re和cookielib。因为python2.x与python3.x有一定区别，特作强调，本系列博客使用的是在Windows 10下的python2.7.10。
 
-##urllib
+##<span id="2">urllib</span>
 
-####基本使用
+####<span id="2.1">基本使用</span>
 urllib是几乎所有的python网络爬虫都会使用的库，功能很简单直接，向指定URL发送http请求并接受数据，以下是一个urllib基本实例。 
 
 ```python
@@ -33,9 +58,9 @@ print html
 
 可以看出来urllib库的主要函数就是urlopen()，其实跟基本的文件操作很类似，open打开一个文件，然后用read()读取文件内容，所以也能用readline()来单行读取文件内容。
 
-####进阶操作
+####<span id="2.2">进阶操作</span>
 
-######发送请求
+######<span id="2.2.1">发送请求</span>
 urlopen的可选参数当然不止一个，比如说或许我们需要在http中同时发送get或者post请求，我们就需要一个参数params或者data，params是get请求的参数，data是post请求的数据，同时我们还需要一个函数，urlencode，将我们的参数进行封装。
 
 1. GET请求
@@ -100,12 +125,12 @@ html = page.read()
 print html
 ```
 保存为urllib_post.py,运行，看一下接收回来的数据。
-
 ![POST请求](post.jpg)
+
 仔细分析一下源码可以看出来，urlopen的第一个参数已经出现了，就是params可以在发送http请求是附带其他数据或者参数，来实现不同的http请求。
 urllib除了可以发送简单get和post请求，还可以发送put和delect请求，这两种比较复杂，这里就不在做详细讲解了。
 
-######urlopen返回对象的其他操作
+######<span id="2.2.2">urlopen返回对象</span>
 前面已经说到，urlopen的操作与文件的基本操作类似，但是urlopen返回的对象除了基本的读取操作之外还有一些其他的操作。
 
 **urlopen返回对象提供方法：**
@@ -138,7 +163,7 @@ print code
 ![urllib返回值](info.jpg)
 可以看到http请求返回的信息，还有表示请求成功的200状态码。
 
-######urllib.urlretrieve()
+######<span id="2.2.3">urllib.urlretrieve()</span>
 这有一个很实用的函数，它的功能是将URL定位的文件下载到本地，可不仅仅是html哦，这里我们直接给出它相应的需要的参数。
 **urllib.urlretrieve(url[,filename[,reporthook[,data]]])**
 - url：需要下载的文件的url
@@ -174,7 +199,7 @@ pic = urllib.urlretrieve(url,url.split('/')[-1])
 ```
 将URL按'\'截断，取最后一个字符串，即是我们想要的文件名。
 
-####urllib其他函数
+####<span id="2.3">urllib其他函数</span>
 1. urllib.urlcleanup()
 前面说到urllib.urlretrieve()下载指定url的文件如果不指定保存文件名的话就会存为临时文件，在缓存里，那么这个函数就是清除这里产生的缓存。
 
@@ -194,9 +219,9 @@ pic = urllib.urlretrieve(url,url.split('/')[-1])
 
 那么到这里我们的urllib函数就讲完了，是不是功能很强大呢？别担心，还有更强大的呢~
 
-##urllib2
+##<span id="3">urllib2</span>
 
-####基本使用
+####<span id="3.1">基本使用</span>
 urllib2作为urllib的升级版，基本功能和使用是和urllib一致的，也可以用urlopen来发送一个请求，如下所示：
 ```python
 import urllib2
@@ -211,8 +236,8 @@ print html
 
 但是这只是看起来一致而已，如果我们去翻看官方手册的话就会看到其实它们的参数有一定的不同。`urllib.urlopen(url[,data[,proxies]])`和`urlopen (url [,data [,timeout]])`虽然前两个参数都是http请求地址URL和传输的数据data，但是第三个参数由没什么用的proxies换为了超时时间timeout，即在中断连接前尝试的时间，这样的话可以设定http请求如果超过多长时间就放弃，避免长时间的等待，浪费网络资源。
 
-####进阶操作
-######urllib2.Request()
+####<span id="3.2">进阶操作</span>
+######<span id="3.2.1">urllib2.Request()</span>
 既然urllib2是urllib的升级版，那么它肯定有不同于urllib的地方，那就是它引入了一个新的函数Request()，让我们来看一下Request()的使用。
 它的功能是将你的http请求更加实例化，让http请求更加饱满，伪装成一个真正的浏览器发送的请求。因为有的站点为了避免被恶意的网络爬虫抓取，会对发送过来的http请求做一定的删选。
 ```python
@@ -258,26 +283,27 @@ print html
 保存为urllib2_post.py，运行，看一下结果。
 
 ![urllib2_POST](urllib2_post.jpg)
+
 确实可以发送一个带着http请求头的post请求，虽然看不出来与之前有什么区别。
 那么既然可以发送post请求，那么用之前的第二种方法发送get请求当然也可以，这里就不再做演示了。
 
-######urllib2.build_opener()
+######<span id="3.2.2">urllib2.build_opener()</span>
 基本的urlopen()函数不支持验证、cookie或其他HTTP高级功能。要支持这些功能，必须使用build_opener()函数来创建自己的自定义Opener对象
-####urllib2其他函数
+####<span id="3.3">urllib2其他函数</span>
 1. urllib2设置代理
 2. urllib2检测重定向
 3. urllib2设定cookie
 4. urllib2打开错误日志
 
-####urllib与urllib2的区别
+####<span id="3.4">urllib与urllib2的区别</span>
 urllib与urllib2还是有一定的区别的，除了我们前面所说的urlopen的参数不一样之外，因为这些区别，使urllib和urllib2同样重要，两者配合使用，才能发挥更大威力。
 - urllib2可以接受一个Request类的实例来设置URL请求的headers，urllib仅可以接受URL。这意味着，你不可以通过urllib模块伪装你的User Agent字符串等（伪装浏览器）。
 - urllib提供urlencode方法用来GET查询字符串的产生，而urllib2没有。所以urllib2发送GET请求或者POST请求都需要urllib的帮助，这也是为何urllib常和urllib2一起使用的原因。
 - urllib2模块比较优势的地方是urlliburllib2.urlopen可以接受Request对象作为参数，从而可以控制HTTP Request的header部。
 - 但是urllib.urlretrieve函数以及urllib.quote等一系列quote和unquote功能没有被加入urllib2中，因此有时也需要urllib的辅助。
 
-##requests
-####安装
+##<span id="4">requests</span>
+####<span id="4.1">安装</span>
 - 通过pip或者easy_install安装
 ```
 $ pip install requests
@@ -297,7 +323,7 @@ $ python setup.py install
 - 通过IDE安装吧，如pycharm！
 
 
-####基本使用
+####<span id="4.2">基本使用</span>
 requests库是基于urllib的，但是它比urllib更方便，更强大，让我们看一下它的基本使用：
 ```python
 #coding=utf-8
@@ -309,8 +335,8 @@ print html
 ```
 跟urllib一样的简洁而又强大，短短的几行代码就可以构造一个http请求。
 
-####进阶操作
-######requests发送请求
+####<span id="4.3">进阶操作</span>
+######<span id="4.3.1">requests发送请求</span>
 但是它和urllib又有不同之处，urllib默认的是发送get请求，但是requests需要指定发送哪种请求，看似更加复杂，但是其实让我们获得更多的选择更便利。requests支持GET/POST/PUT/DELETE/HEAD/OPTIONS等请求类型，它们的使用也非常方便。
 
 ```python
@@ -359,7 +385,7 @@ print html
 可以看出来，还是结果没什么变化，但是它的语法规则比urllib更简洁了不少。
 在这里，不但可以设定请求头，也可以作为查看请求头来使用，例如`page.requests.headers`就可以查看请求头。
 
-######requests上传文件
+######<span id="4.3.2">requests上传文件</span>
 使用 Requests 模块，上传文件也是如此简单的，文件的类型会自动进行处理。
 我们来试一下用post方法向我本地服务器上传一张照片。
 服务器上的php代码如下。
@@ -399,6 +425,7 @@ print html
 ```
 保存为requests_file.py,运行，看一下结果。
 ![requests_file](requests_file.jpg)
+
 上传成功，而且更加方便的是，你可以把字符串当着文件进行上传，就是自己边创建文件边上传，如下所示。
 ```python
 #coding=utf-8
@@ -413,9 +440,10 @@ print html
 ```
 保存为requests_file2.py,运行，看一下结果。
 ![requests_file2](requests_file2.jpg)
+
 也是能够上传成功的。
 
-######requests其他功能
+######<span id="4.3.3">requests其他功能</span>
 - 身份验证
  - 基本身份认证(HTTP Basic Auth)
 ```python
@@ -517,10 +545,10 @@ proxies = {
     "http": "http://user:pass@10.10.1.10:3128/",
 }
 ```
- - verify。Requests可以为HTTPS请求验证SSL证书，就像web浏览器一样。要想检查某个主机的SSL证书，你可以使用 verify 参数。当使用requests.get(url)抓取HTTPS网页时，会遇到requests.exceptions.SSLError错误，可能是因为该网页SSL证书失效，这时需要将verify设置为False即可。默认为True。
+ - verify：Requests可以为HTTPS请求验证SSL证书，就像web浏览器一样。要想检查某个主机的SSL证书，你可以使用 verify 参数。当使用requests.get(url)抓取HTTPS网页时，会遇到requests.exceptions.SSLError错误，可能是因为该网页SSL证书失效，这时需要将verify设置为False即可。默认为True。
 
 
-######requests返回对象
+######<span id="4.3.4">requests返回对象</span>
 在urllib里我们曾说道urlopen的返回对象是与文件打开的对象类似，但是requests返回对象可不是这样，所以如果想查看返回内容，不能使用read()函数，而是使用content函数，或者在python3.X里使用text函数，就像这样`print(page.text)`，除了返回页面内容之外，还有一些其他的内容。
 - status_code：响应状态码
 - encoding：查看编码信息，使用自定义的编码进行解码
@@ -561,7 +589,7 @@ for key,value in headers.items():
 
 
 
-主要参考链接：
+##<span id="5">参考链接</span>
 
 [Python核心模块——urllib模块](http://www.cnblogs.com/sysu-blackbear/p/3629420.html)
 
