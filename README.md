@@ -558,12 +558,18 @@ for key,value in headers.items():
 
 
 主要参考链接：
+
 [Python核心模块——urllib模块](http://www.cnblogs.com/sysu-blackbear/p/3629420.html)
+
 [urllib模块和urllib2模块的区别](http://www.cnblogs.com/sysu-blackbear/p/3630178.html)
+
 [Python 第三方 http 库-Requests 学习](http://www.itwhy.org/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/python/python-%E7%AC%AC%E4%B8%89%E6%96%B9-http-%E5%BA%93-requests-%E5%AD%A6%E4%B9%A0.html)
 [python requests的安装与简单运用](http://www.zhidaow.com/post/python-requests-install-and-brief-introduction)
+
 [requests官方文档-安装](http://requests-docs-cn.readthedocs.org/zh_CN/latest/user/install.html#install)
+
 [requests官方文档-快速上手](http://requests-docs-cn.readthedocs.org/zh_CN/latest/user/quickstart.html)
+
 [requests官方文档-高级用法](http://requests-docs-cn.readthedocs.org/zh_CN/latest/user/quickstart.html)
 
 
