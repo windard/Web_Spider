@@ -25,6 +25,7 @@
 		* [requests其他功能](#4.3.3)
 		* [requests返回对象](#4.3.4)
 * [参考链接](#5)
+
 ---
 [TOC]
 
@@ -442,6 +443,43 @@ print html
 ![requests_file2](requests_file2.jpg)
 
 也是能够上传成功的。
+
+>*2015-10-17更新*
+
+今天用到了这个上传文件的操作，加深了印象。
+
+主要是关于含有中文字符的文件上传，虽然我一直在电脑上避免使用含有中文的文件，但是总是避免不了在某些地方要使用到中文字符。
+
+可是在http协议中是不支持中文的，也就是在http请求中的中get或者post传输的数据是不能有中文的，这一点就很坑爹了。
+
+解决办法就是在传输过去的时候将中文数据进行URLencode，然后在服务器接受的那边将收到的数据再用URLdecode。
+
+Python的URLencode用的是urllib的urlencode()函数，但是这个函数是将json格式的数据编码的，单个数据用的是quote()。以前还不觉得将数据编码有什么用，现在知道了有重大作用。
+
+php直接使用urldecode将编码后的数据解码。php的编码函数有urlencode()和rawurlencode()。
+
+这两个函数的区别是urlencode 将空格则编码为加号（+），rawurlencode 将空格则编码为加号（%20）。
+
+在上传文件的时候，因为还需要将文件按二进制打开，所以还涉及到二进制打开文件的操作，这里就不详细讲解了，可以参看我的另一篇博客。
+
+```python
+# coding=utf-8
+import requests
+import urllib
+url = 'http://localhost/upload/1/upload.php'
+filepath=unicode(r'C:\Users\dell\Desktop\Document\人事处\2011以前年度考核登记表.docx','utf-8')  
+files = {'file':(urllib.quote('2011以前年度考核登记表.docx'), open(filepath, 'rb'))}
+data  = {'submit':'true'} 
+page = requests.post(url, data=data,files=files)
+code = page.status_code
+html = page.content
+if code == 200:
+	print "Successful ~"
+	print html
+else:
+	print "Failed ~"
+```
+保存为requests_file3.py
 
 ######<span id="4.3.3">requests其他功能</span>
 - 身份验证
