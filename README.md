@@ -289,7 +289,8 @@ print html
 那么既然可以发送post请求，那么用之前的第二种方法发送get请求当然也可以，这里就不再做演示了。
 
 ######<span id="3.2.2">urllib2.build_opener()</span>
-基本的urlopen()函数不支持验证、cookie或其他HTTP高级功能。要支持这些功能，必须使用build_opener()函数来创建自己的自定义Opener对象
+基本的urlopen()函数不支持验证、cookie或其他HTTP高级功能。要支持这些功能，必须使用build_opener()函数来创建自己的自定义Opener对象。
+
 ####<span id="3.3">urllib2其他函数</span>
 1. urllib2设置代理
 2. urllib2检测重定向
