@@ -626,6 +626,37 @@ for key,value in headers.items():
 ![requests_info2](requests_info2.jpg)
 这下好看多了，结果显示也是和urlopen返回对象的info()的结果类似。
 
+还有几个部分beautifulsoup json cookiesjar,re正则表达式
+
+网上还有很多相关的教程博客
+[Python 3开发网络爬虫(二)](http://www.yiibai.com/python/python3-webbug-series2.html)
+[Python 3.x爬虫技巧总结](http://blog.csdn.net/wangtaoking1/article/details/18308635)
+[ 端口扫描工具python-nmap的使用](http://blog.csdn.net/wangtaoking1/article/details/9620967)
+[ Python正则表达式指南](http://blog.csdn.net/wanghuiqi2008/article/details/8078084)
+[用python的BeautifulSoup分析html](http://www.cnblogs.com/twinsclover/archive/2012/04/26/2471704.html)
+[Python爬虫入门八之Beautiful Soup的用法](http://cuiqingcai.com/1319.html)
+[Python中Cookie的处理（一）Cookie库](http://www.cnblogs.com/linxiyue/p/3536935.html)
+[Python中Cookie的处理（二）cookielib库](http://www.cnblogs.com/linxiyue/p/3536960.html)
+[逝去日子的博客](http://www.lylinux.org/%E4%BD%BF%E7%94%A8python%E6%89%93%E5%BC%80%E5%9B%BE%E7%89%87.html)
+[Python标准库之urllib，urllib2](http://www.cnblogs.com/linxiyue/p/3537486.html)
+[Python标准库之urllib，urllib2自定义Opener](http://www.cnblogs.com/linxiyue/p/3537557.html)
+[python学习之re模块](http://zipperary.com/2013/07/29/python-re/)
+[python学习之yield](http://zipperary.com/2013/07/30/python-yield/)
+[深入理解urllib、urllib2及requests](http://www.codefrom.com/paper/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3urllib%E3%80%81urllib2%E5%8F%8Arequests)
+[urllib与urllib2的学习总结(python2.7.X)](http://www.cnblogs.com/wly923/archive/2013/05/07/3057122.html)
+[Python爬虫入门五之URLError异常处理](http://cuiqingcai.com/961.html)
+[Python爬虫入门六之Cookie的使用](http://cuiqingcai.com/968.html)
+[urllib2 的使用细节转](http://www.lxway.net/25118564.html)
+[Python 标准库 urllib2 的使用细节](http://zhuoqiang.me/python-urllib2-usage.html#redirect)
+[黄聪：使用Python中的HTMLParser、cookielib抓取和解析网页、从HTML文档中提取链接、图像、文本、Cookies（二）](http://www.cnblogs.com/huangcong/archive/2011/08/31/2160747.html)
+[Python使用cookielib和urllib2模拟登陆新浪微博并抓取数据](http://www.crazyant.net/796.html)
+[模拟登录新浪微博（Python)](http://www.douban.com/note/201767245/)
+[urllib2模块](http://www.cnblogs.com/mmix2009/p/3226775.html)
+[cookielib和urllib2模块相结合模拟网站登录](http://www.cnblogs.com/sysu-blackbear/p/3629770.html)
+[Python Urllib2和Cookielib的综合使用](http://www.cnblogs.com/abcat/p/3702349.html)
+[python中的cookielib的使用方法](http://www.phpgao.com/python-cookielib.html)
+[](http://candychen.gift/index.php/archives/10/)
+[用Python模拟浏览器登录](http://zipperary.com/2013/08/16/python-login/)
 
 
 ##<span id="5">参考链接</span>
