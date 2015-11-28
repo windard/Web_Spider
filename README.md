@@ -55,7 +55,7 @@ print html
 ```
 
 保存为urllib_demo.py,运行。如果你得到的是一堆类似于这种的密密麻麻的数据，就说明urllib请求和接收正常。
-![BAIDU源码](baidu.jpg)
+![BAIDU源码](images/baidu.jpg)
 
 可以看出来urllib库的主要函数就是urlopen()，其实跟基本的文件操作很类似，open打开一个文件，然后用read()读取文件内容，所以也能用readline()来单行读取文件内容。
 
@@ -89,7 +89,7 @@ html = page.read()
 print html
 ```
 保存为urllib_get.py,运行，看一下接收回来的数据。
-![GET请求](get.jpg)
+![GET请求](images/get.jpg)
 
 在此处也可以采用另一种的写法：
 ```python
@@ -126,7 +126,7 @@ html = page.read()
 print html
 ```
 保存为urllib_post.py,运行，看一下接收回来的数据。
-![POST请求](post.jpg)
+![POST请求](images/post.jpg)
 
 仔细分析一下源码可以看出来，urlopen的第一个参数已经出现了，就是params可以在发送http请求是附带其他数据或者参数，来实现不同的http请求。
 urllib除了可以发送简单get和post请求，还可以发送put和delect请求，这两种比较复杂，这里就不在做详细讲解了。
@@ -161,7 +161,7 @@ print "Code:"
 print code
 ```
 保存为urllib_info.py，运行，看一下结果。
-![urllib返回值](info.jpg)
+![urllib返回值](images/info.jpg)
 可以看到http请求返回的信息，还有表示请求成功的200状态码。
 
 ######<span id="2.2.3">urllib.urlretrieve()</span>
@@ -180,7 +180,7 @@ print code
 
 让我们来下载一个本地服务器的照片到python文件所在的文件夹。
 照片是这样的：
-![服务器上的照片](xidian_server.jpg)
+![服务器上的照片](images/xidian_server.jpg)
 python代码如下：
 ```python
 import urllib
@@ -190,7 +190,7 @@ print pic[0]
 print pic[1]
 ```
 保存为urllib_urlretrieve.py,运行，看一下结果。
-![urlretrieve结果](urlretrieve.jpg)
+![urlretrieve结果](images/urlretrieve.jpg)
 
 确实是返回文件名和文件信息，看一下文件夹，也保存下来了xidian.jpg这个照片。
 这里有一个小技巧，就是文件名的设定。
@@ -232,7 +232,7 @@ html = page.read()
 print html
 ```
 保存为urllib2_demo.py,运行，看一下结果。
-![urllib2_baidu_HTML](urllib2_baidu.jpg)
+![urllib2_baidu_HTML](images/urllib2_baidu.jpg)
 可以看到跟urllib的基本写法一致，返回结果也一致。
 
 但是这只是看起来一致而已，如果我们去翻看官方手册的话就会看到其实它们的参数有一定的不同。`urllib.urlopen(url[,data[,proxies]])`和`urlopen (url [,data [,timeout]])`虽然前两个参数都是http请求地址URL和传输的数据data，但是第三个参数由没什么用的proxies换为了超时时间timeout，即在中断连接前尝试的时间，这样的话可以设定http请求如果超过多长时间就放弃，避免长时间的等待，浪费网络资源。
@@ -257,7 +257,7 @@ html = page.read()
 print html
 ```
 保存为urllib2_request.py，运行，看一下结果。
-![urllib2_baidu_HTML2](urllib2_baidu2.jpg)
+![urllib2_baidu_HTML2](images/urllib2_baidu2.jpg)
 显得并没有什么区别，当然没有什么区别，百度对headers并不敏感，但是起码说明这个语法是正确的，那么接下来就让我们来看一下这个函数到底有哪些参数。
 （当然在headers里面也远不仅仅只有User-Agent这一个参数，但这个参数是必选参数，当然也还有一些其他的参数，比如说content-type。）
 **Request (url [data,headers [,origin_req_host ,[unverifiable]]]])**
@@ -283,7 +283,7 @@ print html
 ```
 保存为urllib2_post.py，运行，看一下结果。
 
-![urllib2_POST](urllib2_post.jpg)
+![urllib2_POST](images/urllib2_post.jpg)
 
 确实可以发送一个带着http请求头的post请求，虽然看不出来与之前有什么区别。
 那么既然可以发送post请求，那么用之前的第二种方法发送get请求当然也可以，这里就不再做演示了。
@@ -370,7 +370,7 @@ print get_html
 print post_html
 ```
 保存为requests.request.py,运行，看一下结果。
-![requests_request](requests_request.jpg)
+![requests_request](images/requests_request.jpg)
 确实都能够成功的发送相应的请求。
 requests除了能够更方便的发送请求之外，还将urllib里面的复杂的操作简化了很多。
 上面的例子可以看出来get或者post请求时发送的数据不需要再经过打包就可以直接发送，其实像这样的简化还有不少，比如说headers。
@@ -383,7 +383,7 @@ html = page.content
 print html
 ```
 保存为requests_headers.py,运行，看一下结果。
-![requests_headers](requests_headers.jpg)
+![requests_headers](images/requests_headers.jpg)
 可以看出来，还是结果没什么变化，但是它的语法规则比urllib更简洁了不少。
 在这里，不但可以设定请求头，也可以作为查看请求头来使用，例如`page.requests.headers`就可以查看请求头。
 
@@ -426,7 +426,7 @@ html = page.content
 print html
 ```
 保存为requests_file.py,运行，看一下结果。
-![requests_file](requests_file.jpg)
+![requests_file](images/requests_file.jpg)
 
 上传成功，而且更加方便的是，你可以把字符串当着文件进行上传，就是自己边创建文件边上传，如下所示。
 ```python
@@ -441,7 +441,7 @@ html = page.content
 print html
 ```
 保存为requests_file2.py,运行，看一下结果。
-![requests_file2](requests_file2.jpg)
+![requests_file2](images/requests_file2.jpg)
 
 也是能够上传成功的。
 
@@ -495,7 +495,7 @@ page = requests.get('https://httpbin.org/hidden-basic-auth/user/passwd', auth=HT
 print page.json()
 ```
 保存为requests_basicauth.py,运行，看一下结果。
-![requests_basicauth](requests_basicauth.jpg)
+![requests_basicauth](images/requests_basicauth.jpg)
  - 摘要式身份认证(HTTP Digest Auth)
 写法与上类似`requests.get(URL, auth=HTTPDigestAuth('user', 'pass'))`不在做详细阐述。
 
@@ -508,7 +508,7 @@ print r.cookies['BAIDUID']
 print r.cookies
 ```
 保存为requests_getcookie.py,运行，看一下结果。
-![requests_getcookie](requests_getcookie.jpg)
+![requests_getcookie](images/requests_getcookie.jpg)
 可以看出来一连串的cookies，那么这些是服务器给我们设定的cookies，如果服务器需要我们向它发送cookies的话要怎么办呢？
  - 发送cookies。比如说很多网站都有保存密码的功能，就是在你每次访问站点是先检查你本机的cookies，cookies里面存储了你的账户名和密码，如果你的cookies存在且正确，就可以直接登录，不再需要输入账户名和密码。
 在这里我们访问我本地服务器上的一个页面，代码如下，
@@ -534,7 +534,7 @@ html = page.content
 print html
 ```
 保存为requests_setcookie.py，运行，看一下结果。
-![requests_setcookie](requests_setcookie.jpg)
+![requests_setcookie](images/requests_setcookie.jpg)
 除了cookies之外，还有session，不过这个session可不是保存在服务器端的那个session，那个session是服务器设定的保存在服务器端的我们也没有办法更改，此处的session是指我们在与某个URL通信发送http请求时，保持会话，让同一个cookies长期有效，因为有可能你需要发送不止一次的http请求，又不想每次发送请求的时候都带上cookies。同一个Session实例发出的所有请求之间保持cookies，且这些都是自动处理的，甚是方便。
 这里我没有什么实例了，在网上找到了一个快盘签到脚本，感兴趣的同学可以试一下。
 ```
@@ -610,7 +610,7 @@ print code
 print headers
 ```
 保存为requests_info.py,运行，看一下结果。
-![requests_info](requests_info.jpg)
+![requests_info](images/requests_info.jpg)
 好吧，运行结果是正常的，就是headers那里是直接输出了，没有urlopen返回对象用info()解析的那么好看，没事，我们自己来排版一下就可以。
 ```python
 import requests
@@ -623,10 +623,25 @@ for key,value in headers.items():
 	print key+' : '+value
 ```
 保存为requests_info2.py,运行，看一下结果。
-![requests_info2](requests_info2.jpg)
+![requests_info2](images/requests_info2.jpg)
 这下好看多了，结果显示也是和urlopen返回对象的info()的结果类似。
 
 还有几个部分beautifulsoup json cookiesjar,re正则表达式
+
+##re
+re库是Python的正则表达式，基本用法与其他语言的正则表达式使用基本一致，当然也有一定的自己语言的东西。         
+基础的语法说明就不讲了，都是一致的。    
+1. re.compile(strPattern[,flag])  将字符串形式的正则表达式编译成Pattern对象，第二个参数是匹配模式。    
+>匹配模式有：
+>re.I :忽略大小写
+>re.M :多行模式，可以改变`^`和`$`的行为
+>re.S :点任意匹配模式，改变`.`的行为
+>re.L :使预定字符类 \w \W \b \B \s \S 取决于当前区域设定
+>re.U :使预定字符类 \w \W \b \B \s \S \d \D 取决于unicode定义的字符属性
+>re.X :详细模式。这个模式下正则表达式可以是多行，忽略空白字符，并可以加入注释
+
+算了，还准备再写一写的，但是看到了一篇确实是写的好的博客，看这个吧。       
+[Python正则表达式指南](http://www.cnblogs.com/huxi/archive/2010/07/04/1771073.html)
 
 网上还有很多相关的教程博客
 [Python 3开发网络爬虫(二)](http://www.yiibai.com/python/python3-webbug-series2.html)
