@@ -88,7 +88,7 @@ page = urllib.urlopen("http://localhost/form_get.php?%s" % params)
 html = page.read()
 print html
 ```
-保存为urllib_get.py,运行，看一下接收回来的数据。
+保存为urllib_get.py,运行，看一下接收回来的数据。                 
 ![GET请求](images/get.jpg)
 
 在此处也可以采用另一种的写法：
@@ -369,8 +369,8 @@ post_html = post.content
 print get_html
 print post_html
 ```
-保存为requests.request.py,运行，看一下结果。
-![requests_request](images/requests_request.jpg)
+保存为requests_request.py,运行，看一下结果。                 
+![requests_request](images/requests_request.jpg)                   
 确实都能够成功的发送相应的请求。
 requests除了能够更方便的发送请求之外，还将urllib里面的复杂的操作简化了很多。
 上面的例子可以看出来get或者post请求时发送的数据不需要再经过打包就可以直接发送，其实像这样的简化还有不少，比如说headers。
@@ -534,7 +534,7 @@ html = page.content
 print html
 ```
 保存为requests_setcookie.py，运行，看一下结果。
-![requests_setcookie](images/requests_setcookie.jpg)
+![requests_setcookie](images/requests_setcookie.jpg)              
 除了cookies之外，还有session，不过这个session可不是保存在服务器端的那个session，那个session是服务器设定的保存在服务器端的我们也没有办法更改，此处的session是指我们在与某个URL通信发送http请求时，保持会话，让同一个cookies长期有效，因为有可能你需要发送不止一次的http请求，又不想每次发送请求的时候都带上cookies。同一个Session实例发出的所有请求之间保持cookies，且这些都是自动处理的，甚是方便。
 这里我没有什么实例了，在网上找到了一个快盘签到脚本，感兴趣的同学可以试一下。
 ```
@@ -643,6 +643,122 @@ re库是Python的正则表达式，基本用法与其他语言的正则表达式
 算了，还准备再写一写的，但是看到了一篇确实是写的好的博客，看这个吧。       
 [Python正则表达式指南](http://www.cnblogs.com/huxi/archive/2010/07/04/1771073.html)
 
+##httplib
+httplib是一个非常底层的http库，像urllib，urllib2,requests等，都是将它进行封装之后得到的。                         
+这个函数只有两个原型，分别用于http和https。                
+1. Class httplib.HTTPConnection             
+这个函数用来创建一个http类型的请求链接，返回一个HTTPConnection对象。    
+原型：                                                                    
+HTTPConnection(host[, port[, strict[, timeout]]])                   
+host    : 请求的服务器host,不能带http://开头                           
+port    : 请求的服务器端口号，默认是80端口，可以不写                     
+strict  : 是否严格检查请求的状态行，就是http1.0/1.1 协议版本的那一行，即请求的第一行，默认为False，为True时检查错误会抛异常           
+timeout :单次请求的超时时间，默认为10ms                             
+2. Class httplib.HTTPSConnection                               
+这个函数用来创建一个https类型的请求链接，返回一个HTTPSConnection对象。     
+原型：                                        
+HTTPSConnection(host[, port[, key_file[, cert_file[, strict[, timeout]]]]])
+key_file   : 一个包含PEM格式的私钥文件                                      
+cert_file  : 一个包含PEM格式的认证文件                       
+other      : 其他参数同http参数                            
+
+HTTPConnection 对象的request方法：                      
+发送一个请求。无返回对象，自身对象发生一定的转化。                    
+原型:                                
+conn.request(method, url[, body[, headers]])                      
+method    : 请求的方式，如'GET','POST','HEAD','PUT','DELETE'等
+url       : 请求的网页路径，相对于根目录的相对路径            
+body	  : 请求是否带数据，如POST请求的参数，参数需要经过编码          
+headers   : 请求是否带请求头信息，该参数是一个字典，不过键的值是指定的http头关键字                                     
+
+HTTPConnection 对象的getresponse方法：                       
+取得一个http相应对象，返回HTTPResponse对象                       
+
+HTTPConnection 对象的close方法：                              
+关闭HTTPConnection链接，无返回值，自身对象发生一定的转化。            
+ 
+HTTPConnection 对象的connect方法：                                   
+开启HTTPConnection链接，无返回值，自身对象发生一定的转化。              
+
+HTTPResponse 对象的read方法：
+获得http响应的内容部分，即网页源码,返回字符串。                        
+原型：                             
+res.read([amt])                   
+amt    : 读取指定长度的字符，默认为空，即读取所有的内容。          
+
+HTTPResponse 对象的getheaders方法：                         
+获得所有的响应头内容，返回一个元祖列表。                                    
+原型：                                    
+res.getheaders()
+
+HTTPResponse 对象的getheader()方法：
+获得指定的响应头内容                         
+原型：                          
+res.getheader(name[,default])                    
+name      : 响应头的键值                   
+default   : 若没有找到前一个响应头，则默认查找这个响应头                   
+
+HTTPResponse 对象的msg属性：                          
+所有的响应头信息，和getheaders()方法一样，不过这个返回的是原始字符串     
+HTTPResponse 对象的status属性：                         
+这次请求的返回状态码                                             
+HTTPResponse 对象的version属性：                             
+这次请求的http协议版本 ,10表示http/1.0 ,11表示http/1.1                  
+HTTPResponse 对象的reason属性：                                
+这次请求的的状态的表述内容，200是OK,404是Not Found                 
+```python
+#coding=utf-8
+import httplib
+#建立一个HTTPConnection对象
+conn1 = httplib.HTTPConnection('192.168.137.1')
+#发送GET请求
+conn1.request('GET','/test.php')
+#得到一个HTTPResponse对象
+res1 = conn1.getresponse()
+#打印页面内容
+print res1.read()
+#得到返回响应头
+head = res1.getheaders()
+#打印返回响应头
+for i,j in head:
+	print i+"  :  "+j
+#打印返回对象的msg属性
+print res1.msg
+#打印返回对象的状态码
+print res1.status
+#打印返回对象的version
+print res1.version
+#打印返回对象的reason
+print res1.reason
+conn1.close()
+```
+保存为httplib_demo.py，运行，看一下结果。
+![httplib_demo.png](images/httplib_demo.png)
+再来一个发送GET请求和POST请求的http连接。                  
+```python
+#coding=utf-8
+import httplib
+import urllib
+conn2 = httplib.HTTPConnection('192.168.137.1')
+data1 = urllib.urlencode({'name':'windard'})
+data2 = urllib.urlencode({'admin':'windard'})
+#发送GET请求,需要自己加上？
+conn2.request('GET','/test.php?'+data1)
+res1 = conn2.getresponse()
+print res1.read()
+#发送POST请求
+conn2.request('POST','/test.php',data2)
+res2 = conn2.getresponse()
+print res2.read()
+head = res2.getheaders()
+for i,j in head:
+	print i+"  :  "+j
+conn2.close()
+```
+保存为httplib\_post.py，运行，看一下结果。             
+![httplib_post.png](images/httplib_post.png)               
+
+
 网上还有很多相关的教程博客
 [Python 3开发网络爬虫(二)](http://www.yiibai.com/python/python3-webbug-series2.html)
 [Python 3.x爬虫技巧总结](http://blog.csdn.net/wangtaoking1/article/details/18308635)
@@ -689,6 +805,8 @@ re库是Python的正则表达式，基本用法与其他语言的正则表达式
 [requests官方文档-快速上手](http://requests-docs-cn.readthedocs.org/zh_CN/latest/user/quickstart.html)
 
 [requests官方文档-高级用法](http://requests-docs-cn.readthedocs.org/zh_CN/latest/user/quickstart.html)
+
+[python--httplib模块使用 ](http://blog.csdn.net/five3/article/details/7078951)
 
 
 
