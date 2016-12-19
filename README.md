@@ -349,7 +349,7 @@ value = {'name':'admin','email':'me@wenqiangyang.com'}
 data  = urllib.urlencode(value)
 headers = {'User-Agent':user_agent}
 
-req = urllib2.Request(url,data,headers)
+req = urllib2.Request(url, data, headers)
 page = urllib2.urlopen(req)
 
 html = page.read()
@@ -367,14 +367,152 @@ print html
 
 基本的urlopen()函数不支持验证、cookie或其他HTTP高级功能。要支持这些功能，必须使用 `urllib2.build_opener()` 函数来创建自己的自定义Opener对象。
 
-#### urllib2其他函数
+在使用 cookie 时是配合 cookielib 一起使用，我们来试一下使用 build_opener 登陆 HTTPBasicAuthentication ，和使用 build_opener 设置代理 和使用 build_opener 连接 FTP 服务器上传下载文件。
 
-1. urllib2设置代理
-2. urllib2检测重定向
-3. urllib2设定cookie
-4. urllib2打开错误日志
+首先我们来试一下 HTTPBasicAuthentication ，这次我们自己搭建一个 HTTP Basic Authentication 页面，使用 Python Flask。
+
+```
+from functools import wraps
+from flask import request, Response
+
+def check_auth(username, password):
+    """This function is called to check if a username /
+    password combination is valid.
+    """
+    return username == 'admin' and password == 'secret'
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})   
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello World!'
+
+@app.route('/secret-page')
+@requires_auth
+def secret_page():
+    return "Auth Successful ~"
+
+if __name__ == '__main__':
+    app.run()
+```
+
+我们直接在浏览器查看认证页面是这样的。
+
+![http_basic_auth](images/http_basic_auth.png)
+
+现在我们试着用 urllib2 来做 HTTP Basic 身份认证。
+
+```
+# coding=utf-8
+
+import urllib2
+
+try:
+	f = urllib2.urlopen('http://127.0.0.1:5000/secret-page')
+except Exception,e:
+	print e
+
+# set up authentication info
+authinfo = urllib2.HTTPBasicAuthHandler()
+authinfo.add_password(realm="Login Required", uri="http://127.0.0.1:5000/secret-page", user='admin', passwd='secret')
+
+# build a new opener that adds authentication and caching FTP handlers
+opener = urllib2.build_opener(authinfo)
+
+# install it
+urllib2.install_opener(opener)
+
+f = urllib2.urlopen('http://127.0.0.1:5000/secret-page')
+
+print f.read()
+```
+
+![urllib2_basic_auth](images/urllib2_basic_auth.png)
+
+然后我们试一下代理能不能用
+
+```
+# coding=utf-8
+
+import urllib2
+
+f = urllib2.urlopen('http://members.3322.org/dyndns/getip')
+print f.read()
+
+proxy_support = urllib2.ProxyHandler({"http" : "http://124.88.67.17:843"})
+opener = urllib2.build_opener(proxy_support)
+
+# install it
+urllib2.install_opener(opener)
+
+f = urllib2.urlopen('http://members.3322.org/dyndns/getip')
+print f.read()
+
+```
+
+![urllib2_proxy](images/urllib2_proxy.png)
+
+如果代理需要身份验证的话可以使用 `http://user:pass@124.88.67.17:843` 来进行身份验证。
+
+最后我们试一下登陆 FTP 服务器并下载一个文件操作。
+
+FTP 服务器
+
+```
+# coding=utf-8
+
+from pyftpdlib.authorizers import DummyAuthorizer
+from pyftpdlib.handlers import FTPHandler
+from pyftpdlib.servers import FTPServer
+
+authorizer = DummyAuthorizer()
+authorizer.add_user("admin", "password", "D:\\", perm="elradfmw")
+
+handler = FTPHandler
+handler.authorizer = authorizer
+
+server = FTPServer(("127.0.0.1", 21), handler)
+server.serve_forever()
+```
+
+使用 Python 登陆并下载文件
+
+```
+# coding=utf-8
+
+import urllib
+import urllib2
+
+f = urllib2.urlopen('ftp://admin:password@127.0.0.1/test.txt')
+
+print f.read()
+
+urllib.urlretrieve('ftp://admin:password@127.0.0.1/test.txt', 'test.txt')
+
+print "Download successful ~"
+```
+
+![urllib2_ftp](images/urllib2_ftp.png)
 
 #### urllib与urllib2的区别
+
 urllib与urllib2还是有一定的区别的，除了我们前面所说的urlopen的参数不一样之外，因为这些区别，使urllib和urllib2同样重要，两者配合使用，才能发挥更大威力。
 
 - urllib2可以接受一个Request类的实例来设置URL请求的headers，urllib仅可以接受URL。这意味着，你不可以通过urllib模块伪装你的User Agent字符串等（伪装浏览器）。
@@ -1051,6 +1189,7 @@ print result.read()
 ```
 
 ![cookies_load](images/cookies_load.png)
+
 
 还有几个部分 beautifulsoup lxml cookiesjar
 

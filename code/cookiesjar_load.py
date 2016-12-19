@@ -43,6 +43,6 @@ cookie.clear()
 
 result = opener.open(req)
 
+# 再次打印结果
 result = opener.open("http://127.0.0.1/login.php")
-
 print result.read()
