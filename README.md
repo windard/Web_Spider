@@ -820,7 +820,6 @@ for key,value in headers.items():
 
 这下好看多了，结果显示也是和urlopen返回对象的info()的结果类似。
 
-还有几个部分 beautifulsoup json cookiesjar
 
 ## re
 
@@ -839,9 +838,410 @@ re库是Python的正则表达式，基本用法与其他语言的正则表达式
 
 详细的一篇在 [这里](https://github.com/windard/Python_Lib/tree/master/content/re.md)
 
-## 
-
 [Python正则表达式指南](http://www.cnblogs.com/huxi/archive/2010/07/04/1771073.html)
+
+## cookiesjar
+
+因为 urllib 和 urllib2 库都不能方便的设置 cookies ，一般是与 cookiesjar 配合使用来设置保存使用 cookies
+
+### 获得 cookies
+
+```
+# coding=utf-8
+
+import urllib2
+import cookielib
+
+cookie = cookielib.CookieJar()
+handle = urllib2.HTTPCookieProcessor(cookie)
+opener = urllib2.build_opener(handle)
+
+opener.open("https://www.baidu.com")
+
+# print cookie
+
+for item in cookie:
+	print item.name, ":", item.value
+```
+
+### 更改 cookies
+
+比如说这样的一个站，`cookies.php`
+
+```
+<?php 
+
+if (isset($_COOKIE['user']) && $_COOKIE['user'] == 'admin'){
+	echo "Welcome Aadmin";
+}else{
+	echo $_COOKIE['user'];
+	echo "Welcome Guest";
+	setcookie("user","guest");
+}
+ ?>
+```
+
+可以这样伪装自己
+
+```
+# coding=utf-8
+
+import urllib2
+import cookielib
+
+cookie = cookielib.CookieJar()
+handle = urllib2.HTTPCookieProcessor(cookie)
+opener = urllib2.build_opener(handle)
+
+result = opener.open("http://127.0.0.1/cookies.php")
+
+print result.read()
+
+for item in cookie:
+	print item.name, ":", item.value
+
+# 清除之前的 cookies
+cookie.clear()
+
+# 新建一个新的我们的 cookies
+c = cookielib.Cookie(version=0, name='user', value='admin', port=None, port_specified=False, domain='127.0.0.1', domain_specified=False, domain_initial_dot=False, path='/', path_specified=False, secure=False, expires=None, discard=True, comment=None, comment_url=None, rest={}, rfc2109=False)
+
+# 将新的 cookies 添加到 CookieJar 中
+cookie.set_cookie(c)
+
+result = opener.open("http://127.0.0.1/cookies.php")
+
+print result.read()
+```
+
+![cookies_admin](images/cookies_admin.png)
+
+这样确实就可以成功的设定 cookies 登陆，但是这样自己设定 cookies 太麻烦了，一般使用 cookies 的话都是先正常登陆一个网站然后将 cookies 保存成文本，下次就可以直接使用。
+
+### 保存 cookies
+
+有一个简单的登陆框的站
+
+```
+<?php 
+	if(isset($_COOKIE['username'])){
+		echo "Welcome ".$_COOKIE['username']." Again.";
+	}else{
+		if(isset($_POST['submit'])){
+			$username = $_POST['username'];
+			$password = $_POST['password'];
+			if($password == 'password'){
+				setcookie('username', $username);
+				header("Location:login.php");
+			}
+		}else{
+			echo "<form action=\"\" method=\"post\" accept-charset=\"utf-8\">";
+			echo "<input type=\"text\" name=\"username\" value=\"\">";
+			echo "<br>";
+			echo "<input type=\"text\" name=\"password\" value=\"\" >";
+			echo "<br>";
+			echo "<input type=\"submit\" name=\"submit\" value=\"submit\">";
+			echo "</form>";
+		}
+	}
+ ?>
+```
+
+```
+# coding=utf-8
+
+import urllib
+import urllib2
+import cookielib
+
+# 使用 MozillaCookieJar 来保存 cookies
+cookie = cookielib.MozillaCookieJar("cookies.txt")
+
+handle = urllib2.HTTPCookieProcessor(cookie)
+opener = urllib2.build_opener(handle)
+
+result = opener.open("http://127.0.0.1/login.php")
+
+print result.read()
+
+postdata = urllib.urlencode({
+	'username':'中国人',
+	'password':'password',
+	'submit':'submit'
+	})
+
+print postdata
+
+result = opener.open("http://127.0.0.1/login.php", postdata)
+
+print result.read()
+
+# 保存 cookies
+cookie.save(ignore_discard=True, ignore_expires=True)
+
+# 再次访问
+
+result = opener.open("http://127.0.0.1/login.php")
+
+print result.read()
+
+# 打印 cookies
+
+for item in cookie:
+	print item.name, ":", item.value
+```
+
+在 Windows 下的 cmd 中不能正常显示 utf-8 编码的字符集，可以先使用 `chcp 65001` 然后就可以正常显示。
+
+![cookies_login](images/cookies_login.png)
+
+
+### 使用保存的 cookies
+
+```
+# coding=utf-8
+
+import urllib
+import urllib2
+import cookielib
+
+# 使用刚才已保存的 cookies.txt
+cookie = cookielib.MozillaCookieJar()
+
+cookie.load('cookies.txt', ignore_discard=True, ignore_expires=True)
+
+handle = urllib2.HTTPCookieProcessor(cookie)
+opener = urllib2.build_opener(handle)
+
+# 打印 cookies
+
+for item in cookie:
+	print item.name, ":", item.value
+
+result = opener.open("http://127.0.0.1/login.php")
+
+print result.read()
+
+# 再次登录
+
+data={
+    "username":"windard",
+    "password":"password",
+    "submit":"submit"
+}
+
+postdata = urllib.urlencode(data)
+
+headers ={
+    "Host":"127.0.0.1", 
+    "Referer":"http://127.0.0.1/login.php",
+    "User-Agent":"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36"
+}
+
+req = urllib2.Request("http://127.0.0.1/login.php", postdata, headers)
+
+cookie.clear()
+
+result = opener.open(req)
+
+result = opener.open("http://127.0.0.1/login.php")
+
+print result.read()
+
+```
+
+![cookies_load](images/cookies_load.png)
+
+还有几个部分 beautifulsoup lxml cookiesjar
+
+## httplib
+
+httplib是一个非常底层的http库，像 urllib，urllib2，requests 等，都是将它进行封装之后得到的。                         
+
+这个函数只有两个原型，分别用于 http 和 https 。                
+
+### httplib.HTTPConnection            
+
+这个函数类用来创建一个 http 类型的请求链接，返回一个 HTTPConnection 实例。    
+
+原型：                                                
+
+HTTPConnection(host[, port[, strict[, timeout]]])                   
+- host    : 请求的服务器host,不能带http://开头                           
+- port    : 请求的服务器端口号，默认是80端口，可以不写                     
+- strict  : 是否严格检查请求的状态行，就是http1.0/1.1 协议版本的那一行，即请求的第一行，默认为False，为True时检查错误会抛异常           
+- timeout : 单次请求的超时时间，默认为10ms            
+                 
+### httplib.HTTPSConnection                        
+
+这个函数类用来创建一个 https 类型的请求链接，返回一个 HTTPSConnection 实例。     
+
+原型：                                        
+
+HTTPSConnection(host[, port[, key_file[, cert_file[, strict[, timeout]]]]])
+- host    : 请求的服务器host,不能带http://开头                           
+- port    : 请求的服务器端口号，默认是80端口，可以不写                     
+- key_file   : 一个包含 PEM 格式的公钥文件                                      
+- cert_file  : 一个包含 PEM 格式的认证文件                       
+- strict  : 是否严格检查请求的状态行，就是http1.0/1.1 协议版本的那一行，即请求的第一行，默认为False，为True时检查错误会抛异常           
+- timeout : 单次请求的超时时间，默认为10ms                       
+
+#### HTTPConnection.request
+
+发送一个请求。无返回值，自身对象发生一定的转化。                    
+
+原型:                                
+
+HTTPConnection.request(method, url[, body[, headers]])                      
+- method    : 请求的方式，如'GET','POST','HEAD','PUT','DELETE'等
+- url       : 请求的网页路径，相对于根目录的相对路径            
+- body	    : 请求是否带数据，如POST请求的参数，参数需要经过编码          
+- headers   : 请求是否带请求头信息，该参数是一个字典，不过键的值是指定的http头关键字                                     
+
+#### HTTPConnection.putheader
+
+设定请求头的内容
+
+原型：
+
+HTTPResponse.putheader(header, *values)
+- header 	: 请求头的键
+- values    : 请求头的值
+
+#### HTTPConnection.getresponse
+
+取得一个http相应对象，返回 HTTPResponse 实例                       
+
+#### HTTPConnection.close                              
+
+关闭HTTPConnection链接，无返回值，自身对象发生一定的转化。            
+
+#### HTTPConnection.connect      
+
+开启HTTPConnection链接，无返回值，自身对象发生一定的转化。              
+
+#### HTTPConnection.send      
+
+发送 POST 请求的数据，无返回值，自身对象发生一定的转化。              
+
+#### HTTPResponse.read
+
+获得http响应的内容部分，即网页源码,返回字符串。                        
+
+原型：                             
+
+res.read([amt])                  
+- amt    : 读取指定长度的字符，默认为空，即读取所有的内容。          
+
+#### HTTPResponse.getheaders                  
+
+获得所有的响应头内容，返回一个元祖列表。                                    
+
+#### HTTPResponse.getheader
+
+获得指定的响应头内容                         
+
+原型：                          
+
+res.getheader(name[,default])                    
+- name      : 响应头的键值                   
+- default   : 若没有找到前一个响应头，则默认查找这个响应头                   
+
+#### HTTPResponse.msg 属性                          
+
+所有的响应头信息，和getheaders()方法一样，不过这个返回的是原始字符串     
+
+#### HTTPResponse.status 属性
+
+这次请求的返回状态码                                             
+
+#### HTTPResponse.version 属性
+
+这次请求的http协议版本 ,10表示http/1.0 ,11表示http/1.1                  
+
+#### HTTPResponse.reason 属性                                
+
+这次请求的的状态的表述内容，200 是 OK, 404 是 Not Found        
+
+```python
+# coding=utf-8
+
+import httplib
+
+#建立一个HTTPConnection对象
+conn1 = httplib.HTTPConnection('192.168.137.1')
+
+#发送GET请求
+conn1.request('GET','/test.php')
+
+#得到一个HTTPResponse对象
+res1 = conn1.getresponse()
+
+#打印页面内容
+print res1.read()
+
+#得到返回响应头
+head = res1.getheaders()
+
+#打印返回响应头
+for i,j in head:
+	print i+"  :  "+j
+
+#打印返回对象的msg属性
+print res1.msg
+
+#打印返回对象的状态码
+print res1.status
+
+#打印返回对象的version
+print res1.version
+
+#打印返回对象的reason
+print res1.reason
+
+conn1.close()
+```
+
+保存为httplib_demo.py，运行，看一下结果。
+
+![httplib_demo.png](images/httplib_demo.png)
+
+再来一个发送GET请求和POST请求的http连接。         
+
+```python
+#coding=utf-8
+
+import httplib
+import urllib
+
+conn2 = httplib.HTTPConnection('192.168.137.1')
+
+data1 = urllib.urlencode({'name':'windard'})
+data2 = urllib.urlencode({'admin':'windard'})
+
+#发送GET请求,需要自己加上
+conn2.request('GET','/test.php?'+data1)
+
+res1 = conn2.getresponse()
+print res1.read()
+
+#发送POST请求
+conn2.request('POST','/test.php',data2)
+
+res2 = conn2.getresponse()
+print res2.read()
+
+head = res2.getheaders()
+for i,j in head:
+	print i+"  :  "+j
+
+conn2.close()
+```
+
+保存为httplib\_post.py，运行，看一下结果。          
+
+![httplib_post.png](images/httplib_post.png)               
+
 
 网上还有很多相关的教程博客
 
@@ -890,6 +1290,8 @@ re库是Python的正则表达式，基本用法与其他语言的正则表达式
 [requests官方文档-快速上手](http://requests-docs-cn.readthedocs.org/zh_CN/latest/user/quickstart.html)
 
 [requests官方文档-高级用法](http://requests-docs-cn.readthedocs.org/zh_CN/latest/user/quickstart.html)
+
+[python--httplib模块使用 ](http://blog.csdn.net/five3/article/details/7078951)
 
 
 
