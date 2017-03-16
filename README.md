@@ -641,6 +641,42 @@ print html
 可以看出来，还是结果没什么变化，但是它的语法规则比urllib更简洁了不少。
 在这里，不但可以设定请求头，也可以作为查看请求头来使用，例如`page.requests.headers`就可以查看请求头。
 
+###### 使用 json
+
+一般 API 请求与回复都是使用 json 格式，requests 原生支持 json。
+
+wechat AI robots
+
+```
+# coding=utf8
+import requests
+import itchat
+
+KEY = '8edce3ce905a4c1dbb965e6b35c3834d'
+
+def get_response(msg):
+    apiUrl = 'http://www.tuling123.com/openapi/api'
+    data = {
+        'key'    : KEY,
+        'info'   : msg,
+        'userid' : 'wechat-robot',
+    }
+    try:
+        r = requests.post(apiUrl, data=data).json()
+        return r.get('text')
+    except:
+        return
+
+@itchat.msg_register(itchat.content.TEXT)
+def tuling_reply(msg):
+    defaultReply = 'I received: ' + msg['Text']
+    reply = get_response(msg['Text'])
+    return reply or defaultReply
+
+itchat.auto_login(hotReload=True)
+itchat.run()
+```
+
 ###### requests上传文件
 
 使用 Requests 模块，上传文件也是如此简单的，文件的类型会自动进行处理。
